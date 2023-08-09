@@ -1,10 +1,5 @@
 #!/bin/sh
 
-# TODO:
-# [] make this as a post install hook for pacman
-# [] use array and iterate over it, check -> move -> reset symlink
-# [] dont forget to also version php-fpm service | ls /usr/lib/systemd/system | grep php
-# [] create pvm using laravel prompts... or not
 
 # if no dir ~/.php, create it
 if [ ! -d ~/.php ]; then
