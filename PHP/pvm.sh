@@ -47,6 +47,9 @@ resymlink() {
     exit 1
   fi
 
+  # Stop services
+  sudo systemctl stop php-fpm
+
   # Remove old symlinks and create new
   for file in "$PVM_DIR"/bin/"$version"/*; do
     filename=$(basename "$file")
@@ -56,22 +59,6 @@ resymlink() {
 
   # Set active version to .pvmrc
   echo "$version" > "$PVM_DIR"/.pvmrc
-
-  # Check if $PVM_DIR/services/<version> exists
-  if [ ! -d "$PVM_DIR/services/$version" ]; then
-    echo "Services for $version not found."
-    exit 1
-  fi
-
-  # Stop services
-  sudo systemctl stop php-fpm
-
-  # Remove old symlinks and create new
-  for file in "$PVM_DIR"/services/"$version"/*; do
-    filename=$(basename "$file")
-    sudo rm -f "/usr/lib/systemd/system/$filename"
-    sudo ln -s "$file" "/usr/lib/systemd/system/$filename"
-  done
 
   echo "Restarting services..."
   # Restart services
