@@ -6,68 +6,81 @@ RED=$(tput setaf 1)
 COLOR_RESET=$(tput sgr0)
 
 # Install PHP
-sudo pacman --noconfirm -S php-legacy php-legacy-fpm php-legacy-cgi
+echo "Installing PHP-legacy..."
+# TODO: add --needed flag
+sudo pacman --noconfirm -S php-legacy php-legacy-fpm php-legacy-cgi >/dev/null 2>&1
 
-# XDebug & PHP extensions
-sudo pacman --noconfirm --needed -S php-legacy \
+# PHP extensions
+echo "Installing PHP-legacy extensions..."
+
+sudo pacman --noconfirm --needed -S \
 php-legacy-gd \
 php-legacy-imagick \
 php-legacy-redis \
 php-legacy-pgsql \
 php-legacy-sqlite \
 php-legacy-sodium \
-imagemagick
-yay --noconfirm --needed -S php-legacy-xdebug
+php-legacy-xsl \
+imagemagick > /dev/null 2>&1
+# TODO: Dont ask php-legacy-imagick isnt working for some reaseon :shrug:
+#php-legacy-imagick \
+
+yay --noconfirm --needed -S php-legacy-xdebug > /dev/null 2>&1
 
 # Modify php.ini
+echo "Changing some php.ini values..."
 
-# Set timezone properly
-sudo sed -i 's/;date.timezone =/date.timezone = Europe\/Prague/' /etc/php-legacy/php.ini
-
-# Display all errors
-sudo sed -i 's/display_errors = Off/display_errors = On/' /etc/php-legacy/php.ini
-sudo sed -i 's/display_startup_errors = Off/display_startup_errors = On/' /etc/php-legacy/php.ini
-sudo sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' /etc/php-legacy/php.ini
-
-# Set memory limit to 512MB
-sudo sed -i 's/memory_limit = 128M/memory_limit = 512M/' /etc/php-legacy/php.ini
+sudo sed -i \
+  -e 's/;date.timezone =/date.timezone = Europe\/Prague/' \
+  -e 's/zend.exception_ignore_args = On/zend.exception_ignore_args = Off/' \
+  -e 's/zend.exception_string_param_max_len = 0/zend.exception_string_param_max_len = 15/' \
+  -e 's/mysqlnd.collect_memory_statistics = Off/mysqlnd.collect_memory_statistics = On/' \
+  -e 's/zend.assertions = -1/zend.assertions = 1/' \
+  -e 's/display_errors = Off/display_errors = On/' \
+  -e 's/display_startup_errors = Off/display_startup_errors = On/' \
+  -e 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' /etc/php-legacy/php.ini
 
 # Enable extensions
-sudo sed -i 's/;extension=gd/extension=gd/' /etc/php-legacy/php.ini
-sudo sed -i 's/; extension = imagick/extension = imagick/' /etc/php-legacy/conf.d/imagick.ini
+echo "Enabling PHP-legacy extensions..."
+
+# TODO: Dont ask php-legacy-imagick isnt working for some reaseon :shrug:
+#sudo sed -i 's/; extension = imagick/extension=imagick/' /etc/php-legacy/conf.d/imagick.ini
 sudo sed -i 's/;extension=igbinary/extension=igbinary/' /etc/php-legacy/conf.d/igbinary.ini
 sudo sed -i 's/;extension=redis/extension=redis/' /etc/php-legacy/conf.d/redis.ini
-sudo sed -i 's/;extension=mysqli/extension=mysqli/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=pdo_mysql/extension=pdo_mysql/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=pgsql/extension=pgsql/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=pdo_pgsql/extension=pdo_pgsql/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=sqlite3/extension=sqlite3/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=pdo_sqlite/extension=pdo_sqlite/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=sodium/extension=sodium/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=bcmath/extension=bcmath/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=bz2/extension=bz2/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=calendar/extension=calendar/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=dba/extension=dba/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=exif/extension=exif/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=ffi/extension=ffi/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=ftp/extension=ftp/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=gmp/extension=gmp/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=iconv/extension=iconv/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=intl/extension=intl/' /etc/php-legacy/php.ini
-sudo sed -i 's/;zend_extension=opcache/zend_extension=opcache/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=shmop/extension=shmop/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=soap/extension=soap/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=sockets/extension=sockets/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=sysvmsg/extension=sysvmsg/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=sysvsem/extension=sysvsem/' /etc/php-legacy/php.ini
-sudo sed -i 's/;extension=sysvshm/extension=sysvshm/' /etc/php-legacy/php.ini
+sudo sed -i \
+  -e 's/;extension=gd/extension=gd/' \
+  -e 's/;extension=mysqli/extension=mysqli/' \
+  -e 's/;extension=pdo_mysql/extension=pdo_mysql/' \
+  -e 's/;extension=pgsql/extension=pgsql/' \
+  -e 's/;extension=pdo_pgsql/extension=pdo_pgsql/' \
+  -e 's/;extension=sqlite3/extension=sqlite3/' \
+  -e 's/;extension=pdo_sqlite/extension=pdo_sqlite/' \
+  -e 's/;extension=sodium/extension=sodium/' \
+  -e 's/;extension=bcmath/extension=bcmath/' \
+  -e 's/;extension=bz2/extension=bz2/' \
+  -e 's/;extension=calendar/extension=calendar/' \
+  -e 's/;extension=dba/extension=dba/' \
+  -e 's/;extension=exif/extension=exif/' \
+  -e 's/;extension=ffi/extension=ffi/' \
+  -e 's/;extension=ftp/extension=ftp/' \
+  -e 's/;extension=gmp/extension=gmp/' \
+  -e 's/;extension=iconv/extension=iconv/' \
+  -e 's/;extension=intl/extension=intl/' \
+  -e 's/;zend_extension=opcache/zend_extension=opcache/' \
+  -e 's/;extension=shmop/extension=shmop/' \
+  -e 's/;extension=soap/extension=soap/' \
+  -e 's/;extension=sockets/extension=sockets/' \
+  -e 's/;extension=xsl/extension=xsl/' \
+  -e 's/;extension=sysvmsg/extension=sysvmsg/' \
+  -e 's/;extension=sysvsem/extension=sysvsem/' \
+  -e 's/;extension=sysvshm/extension=sysvshm/' /etc/php-legacy/php.ini
 
 # Handle XDebug
-echo "" | sudo tee /etc/php-legacy/conf.d/xdebug.ini
-echo "zend_extension=xdebug.so" | sudo tee -a /etc/php-legacy/conf.d/xdebug.ini
-echo "xdebug.mode=develop" | sudo tee -a /etc/php-legacy/conf.d/xdebug.ini
+echo "zend_extension=xdebug.so
+xdebug.mode=develop" | sudo tee /etc/php-legacy/conf.d/xdebug.ini >/dev/null 2>&1
 
 # Check if php-legacy -m is same as extension-check.txt
+echo "Checking if installation was successful..."
 test_files="./test-files"
 tmp_name="php-extensions.txt"
 
@@ -76,19 +89,11 @@ file_1="$test_files/$tmp_name"
 file_2="$test_files/extensions-check-legacy.txt"
 
 if cmp -s "$file_1" "$file_2"; then
-    clear
-    printf "%s\n\n" "${GREEN}PHP installed successfully...${COLOR_RESET}"
+    printf "%s\n\n" "${GREEN}PHP-legacy installed successfully...${COLOR_RESET}"
+    rm "$test_files/$tmp_name"
 else
-    clear
-    printf "%s\n" "${RED}PHP installation failed...${COLOR_RESET}"
+    printf "%s\n" "${RED}PHP-legacy installation failed...${COLOR_RESET}"
     diff "$file_1" "$file_2"
+    rm "$test_files/$tmp_name"
     exit 1
 fi
-
-rm "$test_files/$tmp_name"
-
-/usr/bin/php-legacy -v
-
-
-
-

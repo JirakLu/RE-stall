@@ -18,7 +18,6 @@ gmp
 hash
 iconv
 igbinary
-imagick
 intl
 json
 libxml
@@ -55,6 +54,7 @@ xdebug
 xml
 xmlreader
 xmlwriter
+xsl
 Zend OPcache
 zip
 zlib
