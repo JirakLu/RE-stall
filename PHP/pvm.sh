@@ -5,7 +5,7 @@ GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 COLOR_RESET=$(tput sgr0)
 
-PVM_DIR="$HOME/.pvm"
+PVM_DIR="/usr/local/.pvm"
 
 # Get newest version by comparing all versions in bin folder
 get_newest_version() {
@@ -58,7 +58,7 @@ resymlink() {
   done
 
   # Set active version to .pvmrc
-  echo "$version" > "$PVM_DIR"/.pvmrc
+  echo "$version" | sudo tee "$PVM_DIR"/.pvmrc >/dev/null 2>&1
 
   echo "Restarting services..."
   # Restart services
@@ -89,6 +89,13 @@ handle_restart() {
   resymlink "$version"
 }
 
+# pvm list
+# list all installed versions
+handle_list() {
+  echo "Installed versions:"
+  ls -1 "$PVM_DIR"/bin | sort -V
+}
+
 
 command="$1"
 
@@ -96,6 +103,8 @@ if [ "$command" == "use" ]; then
     handle_use "$2"
 elif [ "$command" == "restart" ]; then
     handle_restart
+elif [ "$command" == "list" ]; then
+    handle_list
 elif [ "$command" == "" ]; then
     echo "No command given."
 else

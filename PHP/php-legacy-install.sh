@@ -22,8 +22,6 @@ php-legacy-sqlite \
 php-legacy-sodium \
 php-legacy-xsl \
 imagemagick > /dev/null 2>&1
-# TODO: Dont ask php-legacy-imagick isnt working for some reaseon :shrug:
-#php-legacy-imagick \
 
 yay --noconfirm --needed -S php-legacy-xdebug > /dev/null 2>&1
 
@@ -43,8 +41,7 @@ sudo sed -i \
 # Enable extensions
 echo "Enabling PHP-legacy extensions..."
 
-# TODO: Dont ask php-legacy-imagick isnt working for some reaseon :shrug:
-#sudo sed -i 's/; extension = imagick/extension=imagick/' /etc/php-legacy/conf.d/imagick.ini
+sudo sed -i 's/; extension = imagick/extension=imagick/' /etc/php-legacy/conf.d/imagick.ini
 sudo sed -i 's/;extension=igbinary/extension=igbinary/' /etc/php-legacy/conf.d/igbinary.ini
 sudo sed -i 's/;extension=redis/extension=redis/' /etc/php-legacy/conf.d/redis.ini
 sudo sed -i \

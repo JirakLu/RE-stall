@@ -15,6 +15,7 @@ echo "Installing PHP extensions..."
 
 sudo pacman --noconfirm --needed -S \
 php-gd \
+php-imagick \
 php-redis \
 php-pgsql \
 php-sqlite \
@@ -22,8 +23,6 @@ php-sodium \
 php-xsl \
 xdebug \
 imagemagick > /dev/null 2>&1
-# TODO: Dont ask php-legacy-imagick isnt working for some reaseon :shrug:
-#php-imagick \
 
 # Modify php.ini
 echo "Changing some php.ini values..."
@@ -41,7 +40,7 @@ sudo sed -i \
 # Enable extensions
 echo "Enabling PHP extensions..."
 
-#sudo sed -i 's/; extension = imagick/extension=imagick/' /etc/php/conf.d/imagick.ini
+sudo sed -i 's/; extension = imagick/extension=imagick/' /etc/php/conf.d/imagick.ini
 sudo sed -i 's/;extension=igbinary/extension=igbinary/' /etc/php/conf.d/igbinary.ini
 sudo sed -i 's/;extension=redis/extension=redis/' /etc/php/conf.d/redis.ini
 sudo sed -i \
