@@ -15,3 +15,9 @@ Installing programs on fresh Arch install has never been easier.
 - `php-legacy-install.sh` - same as above, but for legacy php version
 - `php-post-install.sh` - move php binaries to `~/.php/bin` and symlink the correct version to `/usr/bin`
     - this script also creates pacman hook to move the binaries when php update happens
+
+
+- [ ] fix `pvm use latest`
+- [ ] add help to pvm
+- [ ] clean up install scripts
+- [ ] setup arch docker for scripts testing on fresh install

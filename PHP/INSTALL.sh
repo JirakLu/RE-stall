@@ -42,3 +42,5 @@ php-legacy
 php-legacy-cgi
 php-legacy-fpm" | /bin/bash /usr/local/bin/php-post-install-hook.sh
 
+echo 'Add this to your .rc file: export PATH="/usr/local/.pvm:$PATH"'
+
