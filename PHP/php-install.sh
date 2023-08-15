@@ -5,15 +5,22 @@ GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 COLOR_RESET=$(tput sgr0)
 
+PHP_INI_FILE="/etc/php/php.ini"
+PHP_CONF_DIR="/etc/php/conf.d"
+
+# First cleanup possible conflicts
+echo "Cleaning up possible conflicts..."
+sudo rm -f "$PHP_INI_FILE"
+sudo rm -f "$PHP_CONF_DIR"/*.ini
+
 # Install PHP
 echo "Installing PHP..."
-# TODO: add --needed flag
 sudo pacman --noconfirm -S php php-fpm php-cgi >/dev/null 2>&1
 
 # PHP extensions
 echo "Installing PHP extensions..."
 
-sudo pacman --noconfirm --needed -S \
+sudo pacman --noconfirm -S \
 php-gd \
 php-imagick \
 php-redis \
@@ -35,14 +42,15 @@ sudo sed -i \
   -e 's/zend.assertions = -1/zend.assertions = 1/' \
   -e 's/display_errors = Off/display_errors = On/' \
   -e 's/display_startup_errors = Off/display_startup_errors = On/' \
-  -e 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' /etc/php/php.ini
+  -e 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' "$PHP_INI_FILE"
 
 # Enable extensions
 echo "Enabling PHP extensions..."
 
-sudo sed -i 's/; extension = imagick/extension=imagick/' /etc/php/conf.d/imagick.ini
-sudo sed -i 's/;extension=igbinary/extension=igbinary/' /etc/php/conf.d/igbinary.ini
-sudo sed -i 's/;extension=redis/extension=redis/' /etc/php/conf.d/redis.ini
+echo "extension=igbinary" | sudo tee "$PHP_CONF_DIR"/igbinary.ini >/dev/null 2>&1
+
+sudo sed -i 's/; extension = imagick/extension=imagick/' "$PHP_CONF_DIR"/imagick.ini
+sudo sed -i 's/;extension=redis/extension=redis/' "$PHP_CONF_DIR"/redis.ini
 sudo sed -i \
   -e 's/;extension=gd/extension=gd/' \
   -e 's/;extension=mysqli/extension=mysqli/' \
@@ -69,11 +77,11 @@ sudo sed -i \
   -e 's/;extension=xsl/extension=xsl/' \
   -e 's/;extension=sysvmsg/extension=sysvmsg/' \
   -e 's/;extension=sysvsem/extension=sysvsem/' \
-  -e 's/;extension=sysvshm/extension=sysvshm/' /etc/php/php.ini
+  -e 's/;extension=sysvshm/extension=sysvshm/' "$PHP_INI_FILE"
 
 # Handle XDebug
 echo "zend_extension=xdebug.so
-xdebug.mode=develop" | sudo tee /etc/php/conf.d/xdebug.ini >/dev/null 2>&1
+xdebug.mode=develop" | sudo tee "$PHP_CONF_DIR"/xdebug.ini >/dev/null 2>&1
 
 # Check if php -m is same as extension-check.txt
 echo "Checking if installation was successful..."

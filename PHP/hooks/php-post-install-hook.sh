@@ -1,7 +1,7 @@
 #!/bin/sh
 
 PHP_ENV_PATH="/usr/bin"
-PVM_PATH="/usr/local/.pvm"
+PVM_DIR="<home>/.pvm"
 SYSTEMD_PATH="/usr/lib/systemd/system"
 
 handle_php() {
@@ -9,12 +9,12 @@ handle_php() {
   PHP_VERSION=$("$PHP_ENV_PATH/php" -v | head -n 1 | cut -d " " -f 2 | cut -c 1-3)
   PHP_VERSION=$(echo "$PHP_VERSION" | sed 's/\.//g')
 
-  mkdir -p "$PVM_PATH/bin/$PHP_VERSION"
+  mkdir -p "$PVM_DIR/bin/$PHP_VERSION"
 
   # Array of binaries to move
   set -- "php" "php-config" "phpize" "phar" "phar.phar"
   for item in "$@";
-    do sudo mv -f "$PHP_ENV_PATH/$item" "$PVM_PATH/bin/$PHP_VERSION/$item"
+    do sudo mv -f "$PHP_ENV_PATH/$item" "$PVM_DIR/bin/$PHP_VERSION/$item"
   done
 }
 
@@ -25,9 +25,9 @@ handle_php_cgi() {
   PHP_VERSION=$("$PHP_ENV_PATH/$BINARY_NAME" -v | head -n 1 | cut -d " " -f 2 | cut -c 1-3)
   PHP_VERSION=$(echo "$PHP_VERSION" | sed 's/\.//g')
 
-  mkdir -p "$PVM_PATH/bin/$PHP_VERSION"
+  mkdir -p "$PVM_DIR/bin/$PHP_VERSION"
 
-  sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_PATH/bin/$PHP_VERSION/$BINARY_NAME"
+  sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_DIR/bin/$PHP_VERSION/$BINARY_NAME"
 }
 
 handle_php_fpm() {
@@ -39,9 +39,9 @@ handle_php_fpm() {
     PHP_VERSION=$("$PHP_ENV_PATH/$BINARY_NAME" -v | head -n 1 | cut -d " " -f 2 | cut -c 1-3)
     PHP_VERSION=$(echo "$PHP_VERSION" | sed 's/\.//g')
 
-    mkdir -p "$PVM_PATH/bin/$PHP_VERSION"
+    mkdir -p "$PVM_DIR/bin/$PHP_VERSION"
 
-    sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_PATH/bin/$PHP_VERSION/$BINARY_NAME"
+    sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_DIR/bin/$PHP_VERSION/$BINARY_NAME"
   fi
 }
 
@@ -50,14 +50,14 @@ handle_php_legacy() {
   PHP_VERSION=$("$PHP_ENV_PATH/php-legacy" -v | head -n 1 | cut -d " " -f 2 | cut -c 1-3)
   PHP_VERSION=$(echo "$PHP_VERSION" | sed 's/\.//g')
 
-  mkdir -p "$PVM_PATH/bin/$PHP_VERSION"
+  mkdir -p "$PVM_DIR/bin/$PHP_VERSION"
 
   # Array of binaries to move
   set -- "php-legacy" "php-config-legacy" "phpize-legacy" "phar-legacy" "phar-legacy.phar"
   for item in "$@";
   do
       new_item=$(echo "$item" | sed 's/-legacy//g')
-      sudo mv -f "$PHP_ENV_PATH/$item" "$PVM_PATH/bin/$PHP_VERSION/$new_item"
+      sudo mv -f "$PHP_ENV_PATH/$item" "$PVM_DIR/bin/$PHP_VERSION/$new_item"
   done
 }
 
@@ -69,9 +69,9 @@ handle_php_legacy_cgi() {
   PHP_VERSION=$("$PHP_ENV_PATH/$BINARY_NAME" -v | head -n 1 | cut -d " " -f 2 | cut -c 1-3)
   PHP_VERSION=$(echo "$PHP_VERSION" | sed 's/\.//g')
 
-  mkdir -p "$PVM_PATH/bin/$PHP_VERSION"
+  mkdir -p "$PVM_DIR/bin/$PHP_VERSION"
 
-  sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_PATH/bin/$PHP_VERSION/$NEW_BINARY_NAME"
+  sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_DIR/bin/$PHP_VERSION/$NEW_BINARY_NAME"
 }
 
 handle_php_legacy_fpm() {
@@ -85,9 +85,9 @@ handle_php_legacy_fpm() {
     PHP_VERSION=$("$PHP_ENV_PATH/$BINARY_NAME" -v | head -n 1 | cut -d " " -f 2 | cut -c 1-3)
     PHP_VERSION=$(echo "$PHP_VERSION" | sed 's/\.//g')
 
-    mkdir -p "$PVM_PATH/bin/$PHP_VERSION"
+    mkdir -p "$PVM_DIR/bin/$PHP_VERSION"
 
-    sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_PATH/bin/$PHP_VERSION/$NEW_BINARY_NAME"
+    sudo mv -f "$PHP_ENV_PATH/$BINARY_NAME" "$PVM_DIR/bin/$PHP_VERSION/$NEW_BINARY_NAME"
 
     # Remove old service files
     sudo rm -f "$SYSTEMD_PATH/$SERVICE_NAME"
@@ -123,4 +123,4 @@ while IFS= read -r target; do
   esac
 done
 
-/usr/local/.pvm/pvm restart
+"$PVM_DIR"/pvm restart

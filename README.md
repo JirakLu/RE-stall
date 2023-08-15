@@ -17,7 +17,4 @@ Installing programs on fresh Arch install has never been easier.
     - this script also creates pacman hook to move the binaries when php update happens
 
 
-- [ ] fix `pvm use latest`
-- [ ] add help to pvm
-- [ ] clean up install scripts
-- [ ] setup arch docker for scripts testing on fresh install
+- [ ] Refactor post install hook

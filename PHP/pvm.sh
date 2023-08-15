@@ -1,11 +1,13 @@
 #!/bin/bash
 
+[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
+
 # Terminal colors
 GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 COLOR_RESET=$(tput sgr0)
 
-PVM_DIR="/usr/local/.pvm"
+PVM_DIR="<home>/.pvm"
 
 # Get newest version by comparing all versions in bin folder
 get_newest_version() {
@@ -13,7 +15,7 @@ get_newest_version() {
 
   # If empty abort
   if [ -z "$newest_version" ]; then
-    echo "No version found. Please add binaries to $PVM_DIR/bin/<version>"
+    echo "${RED}No version found. Please add binaries to $PVM_DIR/bin/<version>${COLOR_RESET}"
     exit 1
   fi
 
@@ -23,7 +25,7 @@ get_newest_version() {
 # Get current version by reading .pvmrc
 # If there is no .pvmrc file, get the newest version and set it as active
 get_current_version() {
-  active_version=$(cat "$PVM_DIR"/.pvmrc)
+  active_version=$(head --lines 1 "$PVM_DIR"/.pvmrc 2>/dev/null)
 
   if [ -z "$active_version" ]; then
     active_version=$(get_newest_version)
@@ -43,7 +45,7 @@ resymlink() {
 
   # Check if $PVM_DIR/bin/<version> exists
   if [ ! -d "$PVM_DIR/bin/$version" ]; then
-    echo "Binaries for $version not found."
+    echo "${RED}Binaries for $version not found.${COLOR_RESET}"
     exit 1
   fi
 
@@ -72,9 +74,11 @@ resymlink() {
 # pvm use <version | "latest">
 handle_use() {
   version="$1"
-  # If version is empty set it to latest
-  if [ -z "$version" ]; then
-    echo "No version given. Using latest."
+  # If version is empty or "latest" set it to latest
+  if [ -z "$version" ] || [ "$version" = "latest" ]; then
+    if [ -z "$version" ] ; then
+      echo "No version given. Using latest."
+    fi
     version=$(get_newest_version)
   fi
 
@@ -96,6 +100,20 @@ handle_list() {
   ls -1 "$PVM_DIR"/bin | sort -V
 }
 
+# pvm help
+# show help
+handle_help() {
+  echo "Commands:"
+  echo "  use <version | \"latest\">"
+  echo "     - switch to specific version or latest"
+  echo "  restart"
+  echo "     - restart all PHP symlinks"
+  echo "  list"
+  echo "     - list all installed versions"
+  echo "  help"
+  echo "     - show this help"
+}
+
 
 command="$1"
 
@@ -105,8 +123,8 @@ elif [ "$command" == "restart" ]; then
     handle_restart
 elif [ "$command" == "list" ]; then
     handle_list
-elif [ "$command" == "" ]; then
-    echo "No command given."
+elif [ "$command" == "help" ] || [ "$command" = "-h" ]; then
+    handle_help
 else
     echo "Invalid command."
 fi
